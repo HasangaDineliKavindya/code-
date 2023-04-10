@@ -1,0 +1,40 @@
+def add_time(start_time, duration_time, start_day=None):
+    # Convert start_time to minutes
+    start_time_parts = start_time.split()
+    start_time_minutes = sum(x * int(t) for x, t in zip([60, 1], start_time_parts[0].split(':')))
+    if start_time_parts[1] == 'PM':
+        start_time_minutes += 12 * 60
+
+    # Convert duration_time to minutes
+    duration_time_parts = duration_time.split(':')
+    duration_time_minutes = int(duration_time_parts[0]) * 60 + int(duration_time_parts[1])
+
+    # Add duration_time to start_time_minutes
+    end_time_minutes = start_time_minutes + duration_time_minutes
+
+    # Calculate end time in 12-hour clock format
+    end_time_hour = end_time_minutes // 60 % 12 or 12
+    end_time_minutes = end_time_minutes % 60
+    end_time_ampm = 'AM' if end_time_minutes < 720 else 'PM'
+
+    # Calculate number of days later
+    days_later = end_time_minutes // 1440
+    if days_later == 1:
+        days_later_str = ' (next day)'
+    elif days_later > 1:
+        days_later_str = f' ({days_later} days later)'
+    else:
+        days_later_str = ''
+
+    # Calculate day of the week
+    days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    end_day = None
+    if start_day:
+        start_day = start_day.capitalize()
+        start_day_idx = days_of_week.index(start_day)
+        end_day_idx = (start_day_idx + days_later) % 7
+        end_day = f', {days_of_week[end_day_idx]}'
+
+    # Construct final result string
+    end_time_str = f'{end_time_hour:02d}:{end_time_minutes:02d} {end_time_ampm}{days_later_str}{end_day or ""}'
+    return end_time_str
